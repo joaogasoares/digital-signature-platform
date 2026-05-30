@@ -156,7 +156,8 @@ dotnet test tests/DigitalSignature.Api.IntegrationTests
 | Application.UnitTests | 25 | ✅ |
 | Infrastructure.IntegrationTests | 9 | ✅ |
 | ArchitectureTests | 5 | ✅ |
-| **Total** | **70** | **✅** |
+| Api.IntegrationTests | 4 | ✅ (requer Docker) |
+| **Total** | **74** | **✅** |
 
 ---
 
@@ -282,8 +283,10 @@ Este projeto foi desenvolvido com Claude Code como principal ferramenta de apoio
 - [X] **Semana 1:** Fundação, esqueleto, CI, RegisterUser + LoginUser/JWT (36 testes)
 - [X] **Semana 2:** Upload + SHA-256 + AES-256-GCM (57 testes)
 - [X] **Semana 3:** Assinatura RSA-PSS + X509 + PFX + Auditoria (70 testes)
-- [X] **Semana 4:** Docker, ADRs, `/docs/ai`, README (backend completo)
-- [ ] **Pendente:** Frontend Angular, SonarQube, Deploy público
+- [X] **Semana 4:** Docker completo + ADRs + `/docs/ai` + README
+- [X] **Extra:** Pipeline behaviors, ExceptionMiddleware, Admin endpoint, API integration tests (Testcontainers)
+- [X] **Frontend:** Angular 20 — Login, Registro, Lista de documentos, Upload, Assinar, Validar
+- [ ] **Pendente:** SonarQube Quality Gate, Deploy público com URL
 
 ---
 

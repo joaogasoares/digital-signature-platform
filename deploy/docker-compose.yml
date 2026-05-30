@@ -42,6 +42,17 @@ services:
       timeout: 5s
       retries: 5
 
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/docker/web.Dockerfile
+    container_name: digital-signature-web
+    ports:
+      - "80:80"
+    depends_on:
+      api:
+        condition: service_healthy
+
 volumes:
   postgres_data:
   document_storage:
