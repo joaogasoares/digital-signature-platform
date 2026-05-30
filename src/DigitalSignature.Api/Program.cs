@@ -27,5 +27,6 @@ app.MapGet("/health", () => Results.Ok(new { status = "healthy" }))
 
 app.MapUsersEndpoints();
 app.MapDocumentsEndpoints();
+app.MapSignaturesEndpoints();
 
 app.Run();

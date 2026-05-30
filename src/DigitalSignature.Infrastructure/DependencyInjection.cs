@@ -25,6 +25,8 @@ public static class DependencyInjection
 
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IDocumentRepository, DocumentRepository>();
+        services.AddScoped<ISignatureRepository, SignatureRepository>();
+        services.AddScoped<IAuditRepository, AuditRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddSingleton<IPasswordHasher, Argon2PasswordHasher>();
         services.AddSingleton<IClock, SystemClock>();
@@ -32,6 +34,10 @@ public static class DependencyInjection
         services.AddSingleton<IEncryptionService, AesEncryptionService>();
         services.AddSingleton<IFileStorage, FileSystemStorage>();
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+
+        // Only register PFX signature service if configured
+        if (!string.IsNullOrEmpty(configuration["Pfx:Path"]))
+            services.AddScoped<ISignatureService, RsaPfxSignatureService>();
 
         var jwtSecret = configuration["Jwt:Secret"]
             ?? throw new InvalidOperationException("Jwt:Secret is required.");
