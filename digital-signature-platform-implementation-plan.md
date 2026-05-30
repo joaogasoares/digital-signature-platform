@@ -310,12 +310,12 @@ digital-signature-platform/
   3. 5 projetos de teste: `Domain.UnitTests`, `Application.UnitTests`, `Infrastructure.IntegrationTests`, `Api.IntegrationTests`, `ArchitectureTests`.
   4. Referências entre projetos seguindo a regra de dependência (Domain ← Application ← Infrastructure ← Api).
   - *Done:* `dotnet build` e `dotnet test` verdes (sem testes ainda).
-- [ ] **Dia 2 — Teste de arquitetura + CI**
+- [X] **Dia 2 — Teste de arquitetura + CI**
   1. **Red:** teste de arquitetura que falha se Domain referenciar Application/Infrastructure/Api. Provar que detecta violação (adicionar referência fake → vermelho → remover).
   2. `ci.yml`: restore + build + test em cada PR. Push e confirmar verde no GitHub.
   3. ADR-0001 (Clean Architecture); ativar branch protection em `main`.
   - *Done:* PR é bloqueado com build/test vermelho; teste de arquitetura passa.
-- [ ] **Dia 3 — Docker Compose + PostgreSQL + EF Core**
+- [X] **Dia 3 — Docker Compose + PostgreSQL + EF Core**
   1. `docker-compose.yml` com PostgreSQL.
   2. `DbContext` na Infrastructure; entidade `User` mínima.
   3. Migration inicial; `docker compose up` aplica a migration.
