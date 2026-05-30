@@ -321,7 +321,7 @@ digital-signature-platform/
   3. Migration inicial; `docker compose up` aplica a migration.
   4. ADR-0002 (PostgreSQL + EF Core).
   - *Done:* Postgres sobe e a migration cria a tabela `Users`.
-- [ ] **Dia 4–5 — RegisterUser (TDD)**
+- [X] **Dia 4–5 — RegisterUser (TDD)**
   1. **Red:** testes de Domain — VO `Email` (inválido rejeitado), política de senha.
   2. **Green:** implementa `Email` e regras.
   3. **Red:** testes de Application (handler, mocks via NSubstitute) — e-mail duplicado rejeitado, senha vira hash (nunca texto claro), sucesso retorna id.
@@ -329,7 +329,7 @@ digital-signature-platform/
   5. **Red:** teste de integração de API (`WebApplicationFactory` + Testcontainers) — POST registra e persiste o hash.
   6. **Refactor:** extrair política de senha, remover duplicação validator/domínio.
   - *Done:* registrar persiste usuário com senha hasheada; e-mail duplicado → erro.
-- [ ] **Dia 6–7 — LoginUser + JWT (TDD) e fechamento**
+- [X] **Dia 6–7 — LoginUser + JWT (TDD) e fechamento**
   1. **Red:** credencial inválida → falha; válida → token com claims + expiração (testar expiração com `IClock` fake).
   2. **Green:** handler de login + `IJwtTokenGenerator`.
   3. **Red:** integração de API — login retorna JWT válido; endpoint protegido sem token → 401.
