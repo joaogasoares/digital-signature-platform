@@ -1,4 +1,5 @@
 using DigitalSignature.Api.Endpoints;
+using DigitalSignature.Api.Middleware;
 using DigitalSignature.Application;
 using DigitalSignature.Infrastructure;
 using MediatR;
@@ -18,6 +19,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -28,5 +30,8 @@ app.MapGet("/health", () => Results.Ok(new { status = "healthy" }))
 app.MapUsersEndpoints();
 app.MapDocumentsEndpoints();
 app.MapSignaturesEndpoints();
+app.MapAdminEndpoints();
 
 app.Run();
+
+public partial class Program { }
