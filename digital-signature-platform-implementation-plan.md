@@ -300,6 +300,46 @@ digital-signature-platform/
 - [ ] Registrar + logar retorna JWT válido (teste de integração na API).
 - [ ] Primeiro PR aberto, revisado (auto-revisão guiada por Claude Code) e mergeado via GitHub Flow.
 
+**Passos (sequência diária)**
+
+> Princípio da semana: nada de feature antes de CI verde. A ordem abaixo garante TDD desde o primeiro caso de uso.
+
+- [X] **Dia 1 — Repositório, solução e camadas**
+  1. `.gitignore` (.NET + Angular + `.env`), `.editorconfig`, `Directory.Build.props` (`nullable enable`, `TreatWarningsAsErrors`).
+  2. Solução `DigitalSignature.sln` + 4 projetos: `Domain`, `Application`, `Infrastructure`, `Api`.
+  3. 5 projetos de teste: `Domain.UnitTests`, `Application.UnitTests`, `Infrastructure.IntegrationTests`, `Api.IntegrationTests`, `ArchitectureTests`.
+  4. Referências entre projetos seguindo a regra de dependência (Domain ← Application ← Infrastructure ← Api).
+  - *Done:* `dotnet build` e `dotnet test` verdes (sem testes ainda).
+- [ ] **Dia 2 — Teste de arquitetura + CI**
+  1. **Red:** teste de arquitetura que falha se Domain referenciar Application/Infrastructure/Api. Provar que detecta violação (adicionar referência fake → vermelho → remover).
+  2. `ci.yml`: restore + build + test em cada PR. Push e confirmar verde no GitHub.
+  3. ADR-0001 (Clean Architecture); ativar branch protection em `main`.
+  - *Done:* PR é bloqueado com build/test vermelho; teste de arquitetura passa.
+- [ ] **Dia 3 — Docker Compose + PostgreSQL + EF Core**
+  1. `docker-compose.yml` com PostgreSQL.
+  2. `DbContext` na Infrastructure; entidade `User` mínima.
+  3. Migration inicial; `docker compose up` aplica a migration.
+  4. ADR-0002 (PostgreSQL + EF Core).
+  - *Done:* Postgres sobe e a migration cria a tabela `Users`.
+- [ ] **Dia 4–5 — RegisterUser (TDD)**
+  1. **Red:** testes de Domain — VO `Email` (inválido rejeitado), política de senha.
+  2. **Green:** implementa `Email` e regras.
+  3. **Red:** testes de Application (handler, mocks via NSubstitute) — e-mail duplicado rejeitado, senha vira hash (nunca texto claro), sucesso retorna id.
+  4. **Green:** `RegisterUserCommand` + handler + validator + hashing de senha.
+  5. **Red:** teste de integração de API (`WebApplicationFactory` + Testcontainers) — POST registra e persiste o hash.
+  6. **Refactor:** extrair política de senha, remover duplicação validator/domínio.
+  - *Done:* registrar persiste usuário com senha hasheada; e-mail duplicado → erro.
+- [ ] **Dia 6–7 — LoginUser + JWT (TDD) e fechamento**
+  1. **Red:** credencial inválida → falha; válida → token com claims + expiração (testar expiração com `IClock` fake).
+  2. **Green:** handler de login + `IJwtTokenGenerator`.
+  3. **Red:** integração de API — login retorna JWT válido; endpoint protegido sem token → 401.
+  4. **Green:** middleware de auth JWT + `[Authorize]`.
+  5. **Refactor:** isolar configuração do token.
+  6. ADR-0003 (JWT); abrir e mergear o PR da semana via GitHub Flow.
+  - *Done:* registrar + logar retorna JWT; endpoint protegido exige token; CI verde.
+
+> Decisões transversais já estabelecidas nesta semana: `Result<T>`, pipeline behaviors do MediatR (validação/logging) e tratamento global de erros.
+
 ---
 
 ### Semana 2 — Documentos, integridade (SHA-256) e criptografia em repouso (AES)
@@ -323,6 +363,40 @@ digital-signature-platform/
 - [ ] Alterar 1 byte do conteúdo cifrado/armazenado faz a verificação de integridade falhar (teste prova isso).
 - [ ] Frontend autentica e lista documentos do usuário logado.
 - [ ] Cobertura das novas features ≥ meta nas camadas Domain/Application.
+
+**Passos (sequência diária)**
+
+> Princípio da semana: a integridade (SHA-256) vem antes da confidencialidade (AES); o hash desta semana será o objeto assinado na Semana 3.
+
+- [ ] **Dia 1 — Documento como entidade + storage (TDD)**
+  1. **Red:** testes de Domain — entidade `Document`, VO `DocumentHash`, invariantes (tipo/tamanho).
+  2. **Green:** entidade `Document` + porta `IFileStorage`.
+  3. **Green:** `FileSystemStorage` na Infrastructure (abstração permite nuvem depois).
+  4. Migration da tabela `Documents`. ADR-0006 (storage).
+  - *Done:* domínio de documento modelado; storage local funcional.
+- [ ] **Dia 2 — SHA-256 / integridade (TDD, Nível 1)**
+  1. **Red:** hash de um input conhecido bate com valor esperado; hash é determinístico.
+  2. **Green:** `IHashService` + `Sha256HashService`.
+  3. **Refactor:** separar leitura do arquivo do cálculo do hash.
+  - *Done:* hash determinístico e verificável por teste.
+- [ ] **Dia 3 — AES em repouso (TDD, Nível 2)**
+  1. **Red:** round-trip encrypt→decrypt devolve o original; texto cifrado ≠ claro; conteúdo adulterado falha na descriptografia autenticada.
+  2. **Green:** `IEncryptionService` + `AesEncryptionService` (AES-256-GCM, nonce/IV único por documento).
+  3. **Refactor:** padronizar o envelope (nonce∥tag∥ciphertext).
+  - *Done:* storage nunca contém texto claro; adulteração é detectada.
+- [ ] **Dia 4 — UploadDocument + integridade na leitura (TDD)**
+  1. **Red:** handler — tipo/tamanho inválido rejeitado; upload calcula hash, criptografa e persiste; leitura com byte alterado falha na verificação.
+  2. **Green:** `UploadDocumentCommand` + handler + validator; `GetDocument`/`DownloadDocument` com verificação de integridade.
+  3. **Red:** integração com Testcontainers (PostgreSQL real) cobrindo upload→leitura.
+  4. **Refactor:** consolidar o fluxo hash+cifra.
+  - *Done:* upload grava hash + conteúdo cifrado; byte alterado → falha detectada (teste prova).
+- [ ] **Dia 5–7 — Frontend Angular (auth + documentos)**
+  1. Projeto Angular 20 (standalone), Angular Material, configuração de ambiente.
+  2. Telas de login/registro; guard de rota; interceptor JWT.
+  3. Serviço HTTP tipado (testado com `HttpTestingController`).
+  4. Tela de lista + upload de documentos do usuário logado.
+  5. PR da semana via GitHub Flow.
+  - *Done:* frontend autentica, lista e faz upload; cobertura das novas features ≥ meta.
 
 ---
 
@@ -348,6 +422,41 @@ digital-signature-platform/
 - [ ] Certificado expirado/ inválido é rejeitado na validação (teste prova).
 - [ ] PFX protegido por senha é carregado a partir de configuração/secret, nunca do código.
 
+**Passos (sequência diária)**
+
+> Princípio da semana: assina-se o *hash* (não o conteúdo inteiro). Ordem dos níveis: RSA puro → validação X509 → assinatura via PFX (integra os dois). O fluxo "assinar → adulterar → validação falha" é a demonstração central de segurança.
+
+- [ ] **Dia 1 — Assinatura RSA (TDD, Nível 3)**
+  1. **Red:** assinar um hash conhecido é verificável; documento adulterado → verificação falha; chave pública errada → falha.
+  2. **Green:** `ISignatureService` + `RsaSignatureService` (RSA-PSS sobre o hash).
+  3. **Refactor:** separar "assinar bytes" de "assinar documento" (regra de negócio).
+  - *Done:* assinatura RSA verificável; adulteração detectada.
+- [ ] **Dia 2 — SignDocument + auditoria (TDD)**
+  1. **Red:** handler — assinar gera `Signature` verificável + um `AuditEvent`; invariante impede reassinatura inválida.
+  2. **Green:** `SignDocumentCommand` + handler; `IAuditLogger` + entidade `AuditEvent` (append-only).
+  3. **Refactor:** registrar auditoria via pipeline behavior do MediatR.
+  - *Done:* assinar persiste assinatura + evento de auditoria.
+- [ ] **Dia 3 — Validação X509 (TDD, Nível 4)**
+  1. **Red:** certificado válido aceito; expirado rejeitado; key usage incompatível rejeitado; cadeia inválida rejeitada (certificados de teste gerados no setup).
+  2. **Green:** `X509Validator` (validade + cadeia + key usage).
+  3. **Refactor:** mapear resultado para relatório estruturado.
+  - *Done:* certificado inválido/expirado rejeitado (teste prova).
+- [ ] **Dia 4 — Assinatura via PFX/PKCS#12 (TDD, Nível 5)**
+  1. **Red:** PFX com senha correta expõe a chave; senha errada falha; assinatura com a chave do PFX é validável pelo certificado contido.
+  2. **Green:** `PfxCertificateStore` lendo PFX/senha de configuração/secret (PFX de teste é dummy, fora do Git).
+  3. **Green:** integrar PFX ao `SignDocument`.
+  4. **Refactor:** unificar caminho RSA puro vs. via certificado. ADR-0005 (assinatura sobre hash, RSA-PSS).
+  - *Done:* assinatura usa material de chave de certificado; senha nunca no código.
+- [ ] **Dia 5 — ValidateSignature + GetAuditTrail (TDD)**
+  1. **Red:** validação recomputa hash, verifica assinatura e certificado; documento adulterado → "inválido".
+  2. **Green:** `ValidateSignatureQuery` + handler; `GetAuditTrailQuery` (por documento e por usuário).
+  - *Done:* validação ponta a ponta correta; trilha consultável.
+- [ ] **Dia 6–7 — Frontend (assinar/validar/auditoria)**
+  1. Ações "Assinar" e "Validar" com feedback visual do resultado (válido/inválido).
+  2. Tela de trilha de auditoria.
+  3. Estados de carregamento/erro (RxJS/signals). PR da semana via GitHub Flow.
+  - *Done:* fluxo assinar→validar→auditar demonstrável pela UI.
+
 ---
 
 ### Semana 4 — Dashboard admin, qualidade, deploy, documentação e polimento
@@ -371,6 +480,41 @@ digital-signature-platform/
 - [ ] URL pública acessível com fluxo demo funcional.
 - [ ] README permite a um terceiro rodar localmente sem ajuda.
 - [ ] Todos os 5 níveis de criptografia documentados em `/docs` e citados no README.
+
+**Passos (sequência diária)**
+
+> Princípio da semana: fechar qualidade e tornar o sistema acessível por terceiros. Primeiro o portão de qualidade, depois deploy, por fim a vitrine (docs/screenshots).
+
+- [ ] **Dia 1 — Dashboard administrativo (TDD onde houver regra)**
+  1. Autorização por papel `Admin`; queries de métricas (usuários, documentos, eventos).
+  2. Tela de dashboard com listagem de auditoria (Angular Material).
+  - *Done:* Admin vê métricas e auditoria; usuário comum não acessa.
+- [ ] **Dia 2 — SonarQube + cobertura + Quality Gate**
+  1. Cobertura no CI com coverlet + ReportGenerator.
+  2. Integrar análise SonarQube ao `ci.yml`; importar cobertura.
+  3. Configurar Quality Gate (cobertura ≥ 70% global / ≥ 80% Domain+Application; zero bug/vuln blocker/critical).
+  - *Done:* Quality Gate "Passed" no PR; badges de build/cobertura/gate.
+- [ ] **Dia 3 — Dockerização**
+  1. `api.Dockerfile` (multi-stage, usuário não-root, health check).
+  2. `web.Dockerfile` (build de produção do Angular servido por Nginx).
+  3. `docker-compose.yml` completo: api + web + postgres; `.env.example` documentado.
+  - *Done:* `docker compose up` sobe o sistema inteiro do zero.
+- [ ] **Dia 4 — Deploy público**
+  1. Provisionar API + PostgreSQL gerenciado + frontend estático.
+  2. Variáveis de ambiente/secrets (connection string, JWT, chave AES, senha PFX, CORS); HTTPS.
+  3. Migration aplicada em passo controlado; seed de usuário/documentos demo.
+  - *Done:* URL pública acessível com fluxo demo funcional.
+- [ ] **Dia 5–6 — Documentação e diferencial de IA**
+  1. README profissional (visão, arquitetura, tecnologias, como executar/testar, CI/CD, fluxos).
+  2. ADRs finais (incl. ADR-0008 de licenças comerciais).
+  3. `/docs/ai` com prompts reais usados (architecture/tdd/review/security/refactor) e o que foi aceito/rejeitado.
+  4. Diagramas (auth e assinatura) e screenshots.
+  - *Done:* terceiro roda o projeto localmente sem ajuda só com o README.
+- [ ] **Dia 7 — Polimento e preparação para entrevista**
+  1. Security review (`/security-review`) e threat modeling leve (STRIDE) dos fluxos de auth/assinatura.
+  2. Roteiro de demo de 5 minutos; plano B (GIF/vídeo + `docker compose up`).
+  3. Varredura final do Checklist (Seção 14).
+  - *Done:* 5 níveis de criptografia documentados e citados no README; projeto pronto para apresentação.
 
 ---
 
