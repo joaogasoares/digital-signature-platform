@@ -152,10 +152,11 @@ dotnet test tests/DigitalSignature.Api.IntegrationTests
 
 | Projeto | Testes | Status |
 |---|---|---|
-| Domain.UnitTests | 21 | ✅ |
-| Application.UnitTests | 10 | ✅ |
+| Domain.UnitTests | 31 | ✅ |
+| Application.UnitTests | 25 | ✅ |
+| Infrastructure.IntegrationTests | 9 | ✅ |
 | ArchitectureTests | 5 | ✅ |
-| **Total** | **36** | **✅** |
+| **Total** | **70** | **✅** |
 
 ---
 
@@ -209,11 +210,11 @@ POST /api/documents/{id}/validate
 
 | Nível | Algoritmo | Propósito | Status |
 |---|---|---|---|
-| 1 | SHA-256 | Integridade do documento | ⏳ Semana 2 |
-| 2 | AES-256-GCM | Confidencialidade em repouso | ⏳ Semana 2 |
-| 3 | RSA-PSS | Assinatura digital | ⏳ Semana 3 |
-| 4 | X509 | Validação de certificado | ⏳ Semana 3 |
-| 5 | PFX/PKCS#12 | Simulação de certificado A1 | ⏳ Semana 3 |
+| 1 | SHA-256 | Integridade do documento | ✅ Implementado |
+| 2 | AES-256-GCM | Confidencialidade em repouso | ✅ Implementado |
+| 3 | RSA-PSS | Assinatura digital | ✅ Implementado |
+| 4 | X509 | Validação de certificado | ✅ Implementado |
+| 5 | PFX/PKCS#12 | Simulação de certificado A1 | ✅ Implementado |
 
 ---
 
@@ -239,6 +240,10 @@ Push/PR → Restore → Build (Release) → Test → [SonarQube] → [Deploy]
 | [0001](docs/adr/0001-clean-architecture.md) | Clean Architecture + CQRS leve com MediatR |
 | [0002](docs/adr/0002-postgres-efcore.md) | PostgreSQL + EF Core 9 |
 | [0003](docs/adr/0003-jwt-authentication.md) | JWT stateless, anti-enumeração |
+| [0004](docs/adr/0004-aes-gcm-encryption.md) | AES-256-GCM para criptografia em repouso |
+| [0005](docs/adr/0005-rsa-pss-signature.md) | RSA-PSS sobre hash, PFX para material de chave |
+| [0006](docs/adr/0006-file-storage-abstraction.md) | Abstração IFileStorage (filesystem → cloud-ready) |
+| [0008](docs/adr/0008-commercial-licenses.md) | Versões OSS de MediatR e FluentAssertions |
 
 ---
 
@@ -274,10 +279,11 @@ Este projeto foi desenvolvido com Claude Code como principal ferramenta de apoio
 
 ## Roadmap
 
-- [X] **Semana 1:** Fundação, esqueleto, CI, RegisterUser + LoginUser/JWT
-- [ ] **Semana 2:** Upload de documentos, SHA-256, AES-GCM, Frontend auth
-- [ ] **Semana 3:** Assinatura RSA, X509, PFX, Auditoria, Frontend assinatura
-- [ ] **Semana 4:** Dashboard admin, SonarQube, Docker, Deploy público
+- [X] **Semana 1:** Fundação, esqueleto, CI, RegisterUser + LoginUser/JWT (36 testes)
+- [X] **Semana 2:** Upload + SHA-256 + AES-256-GCM (57 testes)
+- [X] **Semana 3:** Assinatura RSA-PSS + X509 + PFX + Auditoria (70 testes)
+- [X] **Semana 4:** Docker, ADRs, `/docs/ai`, README (backend completo)
+- [ ] **Pendente:** Frontend Angular, SonarQube, Deploy público
 
 ---
 
