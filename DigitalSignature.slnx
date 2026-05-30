@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DigitalSignature.Api/DigitalSignature.Api.csproj" />
+    <Project Path="src/DigitalSignature.Application/DigitalSignature.Application.csproj" />
+    <Project Path="src/DigitalSignature.Domain/DigitalSignature.Domain.csproj" />
+    <Project Path="src/DigitalSignature.Infrastructure/DigitalSignature.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DigitalSignature.Api.IntegrationTests/DigitalSignature.Api.IntegrationTests.csproj" />
+    <Project Path="tests/DigitalSignature.Application.UnitTests/DigitalSignature.Application.UnitTests.csproj" />
+    <Project Path="tests/DigitalSignature.ArchitectureTests/DigitalSignature.ArchitectureTests.csproj" />
+    <Project Path="tests/DigitalSignature.Domain.UnitTests/DigitalSignature.Domain.UnitTests.csproj" />
+    <Project Path="tests/DigitalSignature.Infrastructure.IntegrationTests/DigitalSignature.Infrastructure.IntegrationTests.csproj" />
+  </Folder>
+</Solution>
