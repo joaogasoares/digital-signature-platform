@@ -1,0 +1,33 @@
+# Production-grade compose (extends base docker-compose.yml)
+# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Required environment variables (set in .env or platform secrets):
+#   JWT_SECRET        — random 256-bit key: openssl rand -base64 32
+#   AES_MASTER_KEY    — random 256-bit key: openssl rand -base64 32
+#   PFX_PASSWORD      — password protecting the signing PFX
+#   POSTGRES_PASSWORD — strong database password
+
+services:
+  postgres:
+    environment:
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+    restart: unless-stopped
+
+  api:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Default: "Host=postgres;Port=5432;Database=digitalsignature;Username=ds_user;Password=${POSTGRES_PASSWORD}"
+      Jwt__Secret: "${JWT_SECRET}"
+      Aes__MasterKey: "${AES_MASTER_KEY}"
+      Pfx__Path: "/certs/signing.pfx"
+      Pfx__Password: "${PFX_PASSWORD}"
+      Cors__AllowedOrigins: "${FRONTEND_URL}"
+    volumes:
+      - document_storage:/app/storage
+      - ./certs:/certs:ro
+    restart: unless-stopped
+
+  web:
+    environment:
+      API_URL: "${API_URL:-http://api:8080}"
+    restart: unless-stopped

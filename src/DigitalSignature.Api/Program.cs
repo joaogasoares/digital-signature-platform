@@ -1,3 +1,4 @@
+using DigitalSignature.Api.Data;
 using DigitalSignature.Api.Endpoints;
 using DigitalSignature.Api.Middleware;
 using DigitalSignature.Application;
@@ -13,6 +14,12 @@ builder.Services.AddMediatR(DigitalSignature.Application.DependencyInjection.Ass
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
+
+// Seed demo data in production on startup (idempotent)
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    await DatabaseSeeder.SeedAsync(app.Services);
+}
 
 if (app.Environment.IsDevelopment())
 {

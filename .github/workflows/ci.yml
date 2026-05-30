@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # SonarQube needs full history
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -26,7 +28,8 @@ jobs:
       - name: Build
         run: dotnet build DigitalSignature.slnx --no-restore --configuration Release
 
-      - name: Unit Tests (no Docker required)
+      # ── Unit tests (no Docker) ────────────────────────────────────────
+      - name: Unit Tests
         run: |
           dotnet test tests/DigitalSignature.Domain.UnitTests \
             --no-build --configuration Release \
@@ -40,7 +43,8 @@ jobs:
             --no-build --configuration Release \
             --results-directory ./coverage/arch
 
-      - name: Integration Tests (Docker available on ubuntu runner)
+      # ── Integration tests (Docker is available on ubuntu-latest) ─────
+      - name: Integration Tests
         run: |
           dotnet test tests/DigitalSignature.Infrastructure.IntegrationTests \
             --no-build --configuration Release \
@@ -50,7 +54,11 @@ jobs:
             --no-build --configuration Release \
             --collect:"XPlat Code Coverage" \
             --results-directory ./coverage/api
+        env:
+          # ApiFactory uses appsettings.Testing.json for Jwt config
+          ASPNETCORE_ENVIRONMENT: Testing
 
+      # ── Coverage report ───────────────────────────────────────────────
       - name: Install ReportGenerator
         run: dotnet tool install --global dotnet-reportgenerator-globaltool
 
@@ -59,17 +67,44 @@ jobs:
           reportgenerator \
             -reports:"./coverage/**/coverage.cobertura.xml" \
             -targetdir:"./coverage/report" \
-            -reporttypes:"Cobertura;Html"
+            -reporttypes:"Cobertura;Html;SonarQube"
 
-      - name: Upload Coverage Report
+      - name: Upload Coverage Artifact
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: ./coverage/report
 
-      - name: Check Coverage (Domain + Application >= 80%)
+      # ── SonarQube / SonarCloud analysis ──────────────────────────────
+      # Requires: SONAR_TOKEN secret, SONAR_HOST_URL (or SonarCloud org)
+      - name: Install dotnet-sonarscanner
+        if: env.SONAR_TOKEN != ''
+        run: dotnet tool install --global dotnet-sonarscanner
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: SonarQube Begin
+        if: env.SONAR_TOKEN != ''
         run: |
-          DOMAIN_COVERAGE=$(grep -oP 'line-rate="\K[^"]+' coverage/domain/**/coverage.cobertura.xml 2>/dev/null | head -1 || echo "0")
-          APP_COVERAGE=$(grep -oP 'line-rate="\K[^"]+' coverage/application/**/coverage.cobertura.xml 2>/dev/null | head -1 || echo "0")
-          echo "Domain coverage: $DOMAIN_COVERAGE"
-          echo "Application coverage: $APP_COVERAGE"
+          dotnet sonarscanner begin \
+            /k:"digital-signature-platform" \
+            /o:"${{ vars.SONAR_ORG }}" \
+            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.host.url="${{ vars.SONAR_HOST_URL || 'https://sonarcloud.io' }}" \
+            /d:sonar.cs.opencover.reportsPaths="./coverage/**/coverage.cobertura.xml" \
+            /d:sonar.coverage.exclusions="**/Migrations/**,**/Program.cs" \
+            /d:sonar.qualitygate.wait=true
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Build for SonarQube
+        if: env.SONAR_TOKEN != ''
+        run: dotnet build DigitalSignature.slnx --configuration Release
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: SonarQube End
+        if: env.SONAR_TOKEN != ''
+        run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
