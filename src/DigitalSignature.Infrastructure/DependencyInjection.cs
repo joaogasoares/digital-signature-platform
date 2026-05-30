@@ -2,8 +2,10 @@ using System.Text;
 using DigitalSignature.Application.Common.Interfaces;
 using DigitalSignature.Infrastructure.Auth;
 using DigitalSignature.Infrastructure.Common;
+using DigitalSignature.Infrastructure.Cryptography;
 using DigitalSignature.Infrastructure.Persistence;
 using DigitalSignature.Infrastructure.Persistence.Repositories;
+using DigitalSignature.Infrastructure.Storage;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,9 +24,13 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("Default")));
 
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IDocumentRepository, DocumentRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddSingleton<IPasswordHasher, Argon2PasswordHasher>();
         services.AddSingleton<IClock, SystemClock>();
+        services.AddSingleton<IHashService, Sha256HashService>();
+        services.AddSingleton<IEncryptionService, AesEncryptionService>();
+        services.AddSingleton<IFileStorage, FileSystemStorage>();
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
         var jwtSecret = configuration["Jwt:Secret"]
