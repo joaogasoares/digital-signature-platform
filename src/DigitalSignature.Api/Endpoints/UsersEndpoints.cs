@@ -1,3 +1,4 @@
+using DigitalSignature.Application.Users.LoginUser;
 using DigitalSignature.Application.Users.RegisterUser;
 using MediatR;
 
@@ -11,12 +12,20 @@ public static class UsersEndpoints
 
         group.MapPost("/register", async (RegisterUserRequest request, ISender sender) =>
         {
-            var command = new RegisterUserCommand(request.Email, request.Password);
-            var result = await sender.Send(command);
+            var result = await sender.Send(new RegisterUserCommand(request.Email, request.Password));
 
             return result.IsSuccess
                 ? Results.Created($"/api/users/{result.Value}", new { id = result.Value })
                 : Results.BadRequest(new { error = result.Error });
+        });
+
+        group.MapPost("/login", async (LoginUserRequest request, ISender sender) =>
+        {
+            var result = await sender.Send(new LoginUserCommand(request.Email, request.Password));
+
+            return result.IsSuccess
+                ? Results.Ok(new { token = result.Value })
+                : Results.Unauthorized();
         });
 
         return app;
@@ -24,3 +33,4 @@ public static class UsersEndpoints
 }
 
 public sealed record RegisterUserRequest(string Email, string Password);
+public sealed record LoginUserRequest(string Email, string Password);
