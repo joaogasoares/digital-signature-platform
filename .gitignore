@@ -1,0 +1,68 @@
+# .NET
+*.dll
+*.exe
+*.pdb
+bin/
+obj/
+.vs/
+.vscode/
+*.user
+*.suo
+.DS_Store
+*.swp
+*.swo
+
+# NuGet
+.nuget/
+packages/
+*.nupkg
+
+# Entity Framework
+*.db
+*.db-wal
+*.db-shm
+
+# Test results
+TestResults/
+*.trx
+coverage/
+*.opencover.xml
+
+# Build artifacts
+dist/
+build/
+
+# Logs
+logs/
+*.log
+
+# Angular
+node_modules/
+dist/
+.angular/
+angular-dist/
+
+# IDEs
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# Certificates (test PFX)
+*.pfx
+*.p12
+*.pem
+*.key
+!tests/**/*.pfx
+
+# Lock files (optional per project, but tracked)
+package-lock.json
+pnpm-lock.yaml
