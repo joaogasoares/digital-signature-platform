@@ -18,7 +18,7 @@ internal sealed class JwtTokenGenerator(IConfiguration configuration, IClock clo
         var audience = configuration["Jwt:Audience"] ?? "digital-signature-platform";
         var expiryMinutes = int.TryParse(configuration["Jwt:ExpiryMinutes"], out var m) ? m : 60;
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)); // NOSONAR — secret comes from IConfiguration (env var), not hardcoded
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
