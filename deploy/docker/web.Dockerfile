@@ -2,7 +2,7 @@ FROM node:22-alpine AS build
 WORKDIR /app
 
 COPY src/digital-signature-web/package*.json ./
-RUN npm ci --prefer-offline
+RUN npm ci --prefer-offline --ignore-scripts
 
 COPY src/digital-signature-web/ .
 RUN npm run build -- --configuration production

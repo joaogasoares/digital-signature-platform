@@ -7,8 +7,12 @@ public sealed class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbConte
 {
     public AppDbContext CreateDbContext(string[] args)
     {
+        var connectionString =
+            Environment.GetEnvironmentVariable("ConnectionStrings__Default")
+            ?? "Host=localhost;Port=5432;Database=digitalsignature;Username=ds_user;Password=dev-only";
+
         var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseNpgsql("Host=localhost;Port=5432;Database=digitalsignature;Username=ds_user;Password=ds_password")
+            .UseNpgsql(connectionString)
             .Options;
 
         return new AppDbContext(options);
