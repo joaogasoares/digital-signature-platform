@@ -17,7 +17,7 @@ jobs:
           java-version: 17
           distribution: 'zulu'
 
-      - uses: actions/checkout@34e114876b0b11c390a56745cba8c7296529d2fc39830
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           fetch-depth: 0
 
@@ -65,11 +65,27 @@ jobs:
 
           dotnet build DigitalSignature.slnx --no-restore --configuration Release
 
-          dotnet test DigitalSignature.slnx `
+          dotnet test tests/DigitalSignature.Domain.UnitTests/DigitalSignature.Domain.UnitTests.csproj `
             --no-build --configuration Release `
             --collect:"XPlat Code Coverage" `
-            --results-directory ./coverage `
+            --results-directory ./coverage/domain `
             -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+
+          dotnet test tests/DigitalSignature.Application.UnitTests/DigitalSignature.Application.UnitTests.csproj `
+            --no-build --configuration Release `
+            --collect:"XPlat Code Coverage" `
+            --results-directory ./coverage/application `
+            -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+
+          dotnet test tests/DigitalSignature.Infrastructure.IntegrationTests/DigitalSignature.Infrastructure.IntegrationTests.csproj `
+            --no-build --configuration Release `
+            --collect:"XPlat Code Coverage" `
+            --results-directory ./coverage/infra `
+            -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+
+          dotnet test tests/DigitalSignature.ArchitectureTests/DigitalSignature.ArchitectureTests.csproj `
+            --no-build --configuration Release `
+            --results-directory ./coverage/arch
 
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end `
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
