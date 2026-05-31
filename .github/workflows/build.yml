@@ -61,7 +61,8 @@ jobs:
             /o:"joaogasoares" `
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
             /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" `
-            /d:sonar.coverage.exclusions="**/Migrations/**,**/Program.cs,**/AssemblyInfo.cs"
+            /d:sonar.coverage.exclusions="**/Migrations/**,**/Program.cs,**/AssemblyInfo.cs" `
+            /d:sonar.exclusions="**/appsettings.Testing.json,**/Migrations/**"
 
           dotnet build DigitalSignature.slnx --no-restore --configuration Release
 
