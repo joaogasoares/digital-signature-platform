@@ -63,6 +63,4 @@ Desktop.ini
 *.key
 !tests/**/*.pfx
 
-# Lock files (optional per project, but tracked)
-package-lock.json
 pnpm-lock.yaml
