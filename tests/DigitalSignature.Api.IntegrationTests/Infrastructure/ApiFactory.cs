@@ -2,6 +2,7 @@ using DigitalSignature.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
 
@@ -34,6 +35,19 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.ConfigureAppConfiguration((_, config) =>
+        {
+            config.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Logging:LogLevel:Default"] = "Warning",
+                ["Jwt:Secret"] = "test-secret-min-32-chars-long-for-tests!!",
+                ["Jwt:Issuer"] = "digital-signature-platform",
+                ["Jwt:Audience"] = "digital-signature-platform",
+                ["Jwt:ExpiryMinutes"] = "60",
+                ["Storage:BasePath"] = Path.GetTempPath()
+            });
+        });
+
         builder.ConfigureServices(services =>
         {
             // Replace DbContext with Testcontainers connection
