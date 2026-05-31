@@ -89,7 +89,7 @@ jobs:
           dotnet sonarscanner begin \
             /k:"digital-signature-platform" \
             /o:"${{ vars.SONAR_ORG }}" \
-            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.token="$SONAR_TOKEN" \
             /d:sonar.host.url="${{ vars.SONAR_HOST_URL || 'https://sonarcloud.io' }}" \
             /d:sonar.cs.opencover.reportsPaths="./coverage/**/coverage.cobertura.xml" \
             /d:sonar.coverage.exclusions="**/Migrations/**,**/Program.cs" \
@@ -105,6 +105,6 @@ jobs:
 
       - name: SonarQube End
         if: env.SONAR_TOKEN != ''
-        run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+        run: dotnet sonarscanner end /d:sonar.token="$SONAR_TOKEN"
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
