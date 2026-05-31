@@ -17,8 +17,10 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     public async Task InitializeAsync()
     {
+        // Start Postgres FIRST — ConfigureWebHost closure captures the connection string
         await _postgres.StartAsync();
 
+        // Now it's safe to touch Services (host starts here)
         await using var scope = Services.CreateAsyncScope();
         var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         await context.Database.EnsureCreatedAsync();
@@ -34,10 +36,12 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         builder.ConfigureServices(services =>
         {
+            // Replace DbContext with Testcontainers connection
             var descriptor = services.SingleOrDefault(
                 d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
             if (descriptor is not null) services.Remove(descriptor);
 
+            // Lambda captures _postgres — evaluated when host builds, after StartAsync
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(_postgres.GetConnectionString()));
         });
