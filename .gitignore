@@ -64,3 +64,6 @@ Desktop.ini
 !tests/**/*.pfx
 
 pnpm-lock.yaml
+
+# Claude Code
+CLAUDE.md
