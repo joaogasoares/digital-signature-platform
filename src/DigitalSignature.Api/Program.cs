@@ -39,6 +39,6 @@ app.MapDocumentsEndpoints();
 app.MapSignaturesEndpoints();
 app.MapAdminEndpoints();
 
-app.Run();
+await app.RunAsync();
 
 public partial class Program { }
