@@ -5,7 +5,8 @@ namespace DigitalSignature.Domain.ValueObjects;
 public sealed record Email
 {
     private static readonly Regex EmailRegex =
-        new(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        new(@"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.NonBacktracking);
 
     public string Value { get; }
 
