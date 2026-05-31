@@ -7,7 +7,7 @@ RUN npm ci --prefer-offline --ignore-scripts
 COPY src/digital-signature-web/ .
 RUN npm run build -- --configuration production
 
-FROM nginx:alpine AS runtime
+FROM nginxinc/nginx-unprivileged:alpine AS runtime
 COPY --from=build /app/dist/digital-signature-web/browser /usr/share/nginx/html
 COPY deploy/docker/nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
+EXPOSE 8080

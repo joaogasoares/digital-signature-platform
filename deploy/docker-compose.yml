@@ -48,7 +48,7 @@ services:
       dockerfile: deploy/docker/web.Dockerfile
     container_name: digital-signature-web
     ports:
-      - "80:80"
+      - "80:8080"
     depends_on:
       api:
         condition: service_healthy
