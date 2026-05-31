@@ -16,8 +16,7 @@ RUN dotnet publish src/DigitalSignature.Api/DigitalSignature.Api.csproj \
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
-RUN adduser --disabled-password --gecos "" appuser
-USER appuser
+USER app
 
 COPY --from=build /app/publish .
 
