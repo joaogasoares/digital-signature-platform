@@ -286,7 +286,7 @@ Este projeto foi desenvolvido com Claude Code como principal ferramenta de apoio
 - [X] **Semana 4:** Docker completo + ADRs + `/docs/ai` + README
 - [X] **Extra:** Pipeline behaviors, ExceptionMiddleware, Admin endpoint, API integration tests (Testcontainers)
 - [X] **Frontend:** Angular 20 — Login, Registro, Lista de documentos, Upload, Assinar, Validar
-- [ ] **Pendente:** SonarQube Quality Gate, Deploy público com URL
+- [X] **Pendente:** SonarQube Quality Gate, Deploy público com URL
 
 ---
 

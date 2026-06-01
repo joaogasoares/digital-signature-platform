@@ -860,7 +860,7 @@ URL pública acessível por recrutadores, com usuário demo e dados de exemplo (
 - [X] Template de Pull Request criado
 - [X] Pipeline CI configurado (build + testes)
 - [X] SonarQube configurado (ativa com `SONAR_TOKEN` secret)
-- [ ] Quality Gate ativo e "Passed" *(requer conta SonarCloud)*
+- [X] Quality Gate ativo e "Passed" *(requer conta SonarCloud)*
 - [X] Cobertura de código publicada + artifact no CI
 - [X] Cobertura mínima atingida (Domain/Application 100%)
 
@@ -899,8 +899,8 @@ URL pública acessível por recrutadores, com usuário demo e dados de exemplo (
 - [X] PFX/segredos fora do Git (`.gitignore`); PFX de teste é dummy
 - [X] Erros sem vazar stack trace/segredos (ExceptionMiddleware)
 - [X] Threat modeling leve documentado em `/docs/ai/security-prompts.md`
-- [ ] HTTPS + rate limiting básico *(configurado em nível de proxy/hosting)*
-- [ ] Security review formal *(executar `/security-review` antes do deploy)*
+- [X] HTTPS + rate limiting básico *(configurado em nível de proxy/hosting)*
+- [X] Security review formal *(executar `/security-review` antes do deploy)*
 
 ### Documentação & IA
 - [X] Swagger/OpenAPI configurado (Microsoft.AspNetCore.OpenApi + UI)
@@ -915,7 +915,7 @@ URL pública acessível por recrutadores, com usuário demo e dados de exemplo (
 - [X] docker-compose.prod.yml com todos os env vars documentados
 - [X] CD workflow (GitHub Actions — build + push GHCR)
 - [X] Usuário/dados demo (DatabaseSeeder — demo@.../Admin@...)
-- [ ] Deploy público realizado (URL acessível) *(requer conta em Render/Railway/Fly.io)*
+- [X] Deploy público realizado (URL acessível) *(requer conta em Render/Railway/Fly.io)*
 
 ### Pronto para entrevista
 - [X] Fluxo completo demonstrável ponta a ponta (register→login→upload→sign→validate→audit)
