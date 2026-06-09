@@ -499,7 +499,7 @@ digital-signature-platform/
   2. `web.Dockerfile` (build de produção do Angular servido por Nginx).
   3. `docker-compose.yml` completo: api + web + postgres; `.env.example` documentado.
   - *Done:* `docker compose up` sobe o sistema inteiro do zero.
-- [ ] **Dia 4 — Deploy público**
+- [X] **Dia 4 — Deploy público**
   1. Provisionar API + PostgreSQL gerenciado + frontend estático.
   2. Variáveis de ambiente/secrets (connection string, JWT, chave AES, senha PFX, CORS); HTTPS.
   3. Migration aplicada em passo controlado; seed de usuário/documentos demo.

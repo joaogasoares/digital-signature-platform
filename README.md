@@ -304,4 +304,4 @@ Jwt__ExpiryMinutes=60
 
 ---
 
-*Desenvolvido por João Gabriel — portfólio para vaga Full Stack Angular + .NET em empresa de identidade/certificação digital.*
+*Desenvolvido por João Gabriel — portfólio para vaga Full Stack Angular + .NET.*
