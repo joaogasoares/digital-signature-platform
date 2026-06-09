@@ -35,9 +35,13 @@ public static class DependencyInjection
         services.AddSingleton<IFileStorage, FileSystemStorage>();
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
-        // Only register PFX signature service if configured
+        // Use the real PFX certificate when configured; otherwise fall back to
+        // an ephemeral self-signed certificate so the signing pipeline works in
+        // development, tests, and demos without a certificate on disk.
         if (!string.IsNullOrEmpty(configuration["Pfx:Path"]))
-            services.AddScoped<ISignatureService, RsaPfxSignatureService>();
+            services.AddSingleton<ISignatureService, RsaPfxSignatureService>();
+        else
+            services.AddSingleton<ISignatureService, SelfSignedSignatureService>();
 
         var jwtSecret = configuration["Jwt:Secret"]
             ?? throw new InvalidOperationException("Jwt:Secret is required.");
